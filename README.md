@@ -61,11 +61,20 @@ It also provides the resources `ui://homekeeper/card.html` (MCP App) and `homeke
 
 ## Running it
 
-You need Node.js 20 or newer.
+You need Node.js 20 or newer and Chrome or Edge. See [REQUIREMENTS.md](REQUIREMENTS.md) for the full list.
+
+**Quick setup.** The setup script checks Node.js, installs the packages, creates `.env` and asks for a free Groq key:
 
 ```bash
 git clone https://github.com/chauhan-manasvi/homekeeper-alexa.git
 cd homekeeper-alexa
+./setup.sh              # Windows: double-click setup.bat
+npm start
+```
+
+**Manual setup**
+
+```bash
 npm install
 cp .env.example .env    # add a free Groq or Gemini key, or use local Ollama (see below)
 npm start
@@ -117,6 +126,8 @@ web/index.html         Alexa+ simulator
 web/card.html          MCP App card
 skills/homekeeper/     Agent Skill
 test/smoke.js          End-to-end MCP test
+setup.sh, setup.bat    One-step setup for Linux/macOS and Windows
+REQUIREMENTS.md        Software, model key and packages needed
 ```
 
 ## What's simulated
