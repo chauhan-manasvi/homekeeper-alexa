@@ -5,3 +5,4 @@ PLAN.md
 SUBMISSION.md
 chrome-prof/
 *.log
+.certs/

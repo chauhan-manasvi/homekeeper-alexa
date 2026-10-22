@@ -4,6 +4,10 @@
 import 'dotenv/config';
 import express from 'express';
 import path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
+import https from 'node:https';
+import { execFileSync } from 'node:child_process';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { createServer } from './mcp.js';
 import { resetHousehold } from './store.js';
@@ -73,3 +77,38 @@ app.listen(PORT, () => {
   console.log(`HomeKeeper MCP server:   http://localhost:${PORT}/mcp`);
   console.log(`Alexa+ simulator:      http://localhost:${PORT}/`);
 });
+
+// HTTPS for other devices on the network. Browsers only allow the microphone on
+// HTTPS or localhost, so http://<lan-ip> can't use voice. A self-signed certificate
+// is created on first run; set HTTPS_PORT=0 to turn this off.
+const HTTPS_PORT = Number(process.env.HTTPS_PORT ?? 8443);
+const lanIps = Object.values(os.networkInterfaces()).flat()
+  .filter((a) => a && a.family === 'IPv4' && !a.internal)
+  .map((a) => a.address);
+
+function loadCertificate() {
+  const dir = path.resolve('.certs');
+  const keyFile = path.join(dir, 'key.pem');
+  const certFile = path.join(dir, 'cert.pem');
+  const san = ['DNS:localhost', 'IP:127.0.0.1', ...lanIps.map((ip) => `IP:${ip}`)].join(',');
+  const sanFile = path.join(dir, 'san.txt');
+  // Regenerate when the network addresses change, e.g. on a different Wi-Fi.
+  if (!fs.existsSync(certFile) || !fs.existsSync(sanFile) || fs.readFileSync(sanFile, 'utf8') !== san) {
+    fs.mkdirSync(dir, { recursive: true });
+    execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '825',
+      '-keyout', keyFile, '-out', certFile, '-subj', '/CN=HomeKeeper', '-addext', `subjectAltName=${san}`],
+      { stdio: 'ignore' });
+    fs.writeFileSync(sanFile, san);
+  }
+  return { key: fs.readFileSync(keyFile), cert: fs.readFileSync(certFile) };
+}
+
+if (HTTPS_PORT) {
+  try {
+    https.createServer(loadCertificate(), app).listen(HTTPS_PORT, () => {
+      for (const ip of lanIps) console.log(`On other devices:      https://${ip}:${HTTPS_PORT}/`);
+    });
+  } catch (err) {
+    console.warn(`HTTPS not started (${err.message}). Voice from other devices needs openssl.`);
+  }
+}
