@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# One-step setup for HomeKeeper on Linux and macOS.
-# Checks Node.js, installs packages if needed, creates .env and asks for a free Groq key.
-# Usage: ./setup.sh   (or: bash setup.sh)
+# One-step setup and start for HomeKeeper on Linux and macOS.
+# Checks Node.js (installs it with Homebrew on macOS), installs packages, creates .env,
+# asks for a free Groq key, then starts HomeKeeper and opens it in the browser.
+# Usage: ./setup.sh   (or: bash setup.sh). Add --no-start to only set up.
 
 set -e
 cd "$(dirname "$0")"
@@ -14,12 +15,13 @@ echo "HomeKeeper setup"
 echo
 
 # 1. Node.js 20 or newer
-if ! command -v node >/dev/null 2>&1; then
-  fail "Node.js is not installed. Install Node.js 20 or newer from https://nodejs.org and run this again."
+node_major() { command -v node >/dev/null 2>&1 && node -p 'process.versions.node.split(".")[0]' || echo 0; }
+if [ "$(node_major)" -lt 20 ] && [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
+  echo "  Installing Node.js with Homebrew…"
+  brew install node
 fi
-NODE_MAJOR=$(node -p 'process.versions.node.split(".")[0]')
-if [ "$NODE_MAJOR" -lt 20 ]; then
-  fail "Node.js $(node -v) is too old. Install Node.js 20 or newer from https://nodejs.org and run this again."
+if [ "$(node_major)" -lt 20 ]; then
+  fail "Node.js 20 or newer is needed. Install it from https://nodejs.org (or your package manager) and run this again."
 fi
 ok "Node.js $(node -v)"
 
@@ -65,9 +67,30 @@ else
   warn "No model key in .env yet. Add GROQ_API_KEY=... to .env (free key: https://console.groq.com/keys)."
 fi
 
+
+# 5. Start HomeKeeper and open it in the browser
+HK_PORT=$(grep -E '^PORT=[0-9]+' .env | cut -d= -f2 || true)
+URL="http://localhost:${HK_PORT:-8787}"
+if [ "$1" = "--no-start" ]; then
+  echo
+  echo "All set. Start HomeKeeper with: npm start, then open $URL in Chrome or Edge."
+  exit 0
+fi
+open_browser() {
+  if command -v open >/dev/null 2>&1 && [ "$(uname)" = "Darwin" ]; then open "$1"
+  elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$1" >/dev/null 2>&1
+  else echo "  Open $1 in Chrome or Edge."; fi
+}
+if curl -s -o /dev/null "$URL/api/info" 2>/dev/null; then
+  warn "HomeKeeper (or another app) is already running at $URL. Opening it in the browser."
+  open_browser "$URL"
+  exit 0
+fi
+# Open the browser in the background as soon as the server answers.
+( for _ in $(seq 90); do curl -s -o /dev/null "$URL/api/info" && break; sleep 1; done; open_browser "$URL" ) &
+
 echo
-echo "All set. Start HomeKeeper with:"
+echo "Starting HomeKeeper at $URL"
+echo "The browser will open by itself. Press Ctrl+C here to stop HomeKeeper."
 echo
-echo "  npm start"
-echo
-echo "Then open http://localhost:8787 in Chrome or Edge."
+exec npm start

@@ -1,12 +1,14 @@
 # Requirements
 
-Everything you need to run HomeKeeper. The setup script (`setup.sh` on Linux/macOS, `setup.bat` on Windows) checks and installs most of this for you.
+Everything you need to run HomeKeeper.
+
+**You don't need to install these by hand.** On Windows, double-click `setup.bat`. It installs Node.js if it's missing, installs the packages, asks for a free Groq key, then starts HomeKeeper and opens it in your browser. On Linux and macOS, run `./setup.sh`, which does the same (on Linux, install Node.js 20+ first).
 
 ## Software
 
 | What | Version | Why | Get it |
 |---|---|---|---|
-| Node.js | 20 or newer (includes npm) | Runs the MCP server, agent and simulator | https://nodejs.org |
+| Node.js | 20 or newer (includes npm) | Runs the MCP server, agent and simulator | Installed by `setup.bat` on Windows, or https://nodejs.org |
 | Chrome or Edge | Any recent version | Voice input and speech output in the simulator. Other browsers work for typing only | https://www.google.com/chrome |
 | Internet connection | | Chrome's speech recognition and the Groq model run online | |
 
