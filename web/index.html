@@ -328,13 +328,23 @@
   }
 
   // --- Speech out ---
+  // Alexa speaks with a female voice. Each OS ships different voices (macOS's
+  // en-IN voice is the male "Rishi"), so prefer known female voices and skip male ones.
+  const FEMALE_VOICE = /female|heera|veena|neerja|isha|kajal|samantha|karen|moira|tessa|serena|fiona|victoria|zira|aria|jenny|sonia|libby|google us english/i;
+  const MALE_VOICE = /\bmale\b|rishi|ravi|prabhat|hemant|daniel|alex\b|fred|albert|ralph|aaron|arthur|gordon|oliver|rocko|eddy|reed|grandpa|junior|david|mark|guy|ryan/i;
+  function pickVoice(voices) {
+    const en = voices.filter(v => v.lang.startsWith('en'));
+    return en.find(v => v.lang === 'en-IN' && FEMALE_VOICE.test(v.name))
+      || en.find(v => FEMALE_VOICE.test(v.name))
+      || en.find(v => !MALE_VOICE.test(v.name))
+      || en[0] || null;
+  }
   function speak(text) {
     if (!('speechSynthesis' in window)) { vstat('ttsStat', 'No sound', 'err'); showSpoken(text, null, "This browser can't speak. Please use Chrome or Edge."); return Promise.resolve(); }
     return new Promise(resolve => {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      const voices = speechSynthesis.getVoices();
-      u.voice = voices.find(v => v.lang === 'en-IN' && /female|heera|veena|google/i.test(v.name)) || voices.find(v => v.lang === 'en-IN') || voices.find(v => v.lang.startsWith('en')) || null;
+      u.voice = pickVoice(speechSynthesis.getVoices());
       u.rate = 1.05;
       const voiceNote = `voice: ${u.voice ? `${u.voice.name} (${u.voice.lang})` : 'browser default'}`;
       showSpoken(text, 0, voiceNote);
