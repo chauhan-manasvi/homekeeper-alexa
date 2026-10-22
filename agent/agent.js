@@ -33,6 +33,7 @@ const MAX_TOOL_ROUNDS = 8;
 
 const SYSTEM = `You are Alexa, a warm and efficient voice assistant in an Indian home, with the HomeKeeper skill connected for appliance care.
 Your replies are spoken aloud on an Echo Show: one to three short sentences, no markdown, no lists, no emojis. Say prices like "399 rupees".
+If the user only greets you (like "hello" or "hi Alexa"), just greet them back and ask how you can help today, in one short sentence. Do not call any tools or mention appliances until they ask for something.
 The screen shows a card for most tool results, so you do not need to read every detail; mention the key facts and what the user can say next.
 When a user reports a problem, check the home first if you have not yet, then troubleshoot and guide one DIY step at a time. Only suggest a technician once the user says the DIY step did not help, or when the guide says a technician is needed or there is a safety issue.
 Before booking or buying anything, read back the price and slot or plan and wait for a clear yes. Use the user's own words as the appliance reference when unsure.
