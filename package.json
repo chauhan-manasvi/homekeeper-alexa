@@ -1,0 +1,23 @@
+{
+  "name": "homekeeper-alexa",
+  "version": "1.0.0",
+  "description": "HomeKeeper: Alexa+ home appliance care agent (MCP server + Alexa+ simulator)",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node test/smoke.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.36.0",
+    "@anthropic-ai/sdk": "^0.137.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  }
+}

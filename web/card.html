@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HomeKeeper card</title>
+<style>
+  :root {
+    --bg: #070c18; --panel: rgba(255,255,255,.045); --panel-2: rgba(255,255,255,.07); --line: rgba(255,255,255,.09);
+    --text: #eef4ff; --muted: #8796b0; --dim: #56637a;
+    --accent: #22d3ee; --blue: #4f7cff; --violet: #8b5cf6; --good: #34d399; --warn: #fbbf24; --bad: #f87171;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; overflow-x: hidden; color: var(--text); font: 15px/1.45 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; background: radial-gradient(ellipse at 100% 0%, rgba(79,124,255,.18), transparent 55%), radial-gradient(ellipse at 0% 100%, rgba(34,211,238,.10), transparent 50%), var(--bg); }
+  .card { padding: 20px 22px 24px; }
+  .card > * { animation: up .5s cubic-bezier(.2,.8,.2,1) both; }
+  .card > *:nth-child(2) { animation-delay: .04s; } .card > *:nth-child(3) { animation-delay: .08s; } .card > *:nth-child(4) { animation-delay: .12s; }
+  .card > *:nth-child(5) { animation-delay: .16s; } .card > *:nth-child(n+6) { animation-delay: .2s; }
+  @keyframes up { from { opacity: 0; transform: translateY(10px); } }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  h1 { font-size: 24px; margin: 6px 0 14px; font-weight: 650; letter-spacing: -.015em; }
+  h2 { font-size: 11px; color: var(--muted); font-weight: 600; margin: 18px 0 10px; text-transform: uppercase; letter-spacing: .14em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .tile { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px; transition: border-color .2s, transform .2s, background .2s; }
+  .tile:hover { border-color: rgba(34,211,238,.35); background: var(--panel-2); transform: translateY(-2px); }
+  .grid .tile { animation: up .5s cubic-bezier(.2,.8,.2,1) both; }
+  .grid .tile:nth-child(2) { animation-delay: .05s; } .grid .tile:nth-child(3) { animation-delay: .1s; } .grid .tile:nth-child(4) { animation-delay: .15s; } .grid .tile:nth-child(5) { animation-delay: .2s; } .grid .tile:nth-child(n+6) { animation-delay: .25s; }
+  .tile b { display: block; font-size: 15px; font-weight: 600; }
+  .tile small { color: var(--muted); display: block; font-size: 12.5px; }
+  .tile .head { display: flex; gap: 10px; align-items: center; margin-bottom: 4px; }
+  .ico { width: 36px; height: 36px; flex: none; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(79,124,255,.18)); border: 1px solid rgba(34,211,238,.25); color: var(--accent); }
+  .ico svg { width: 19px; height: 19px; }
+  .ico.lg { width: 46px; height: 46px; border-radius: 14px; } .ico.lg svg { width: 24px; height: 24px; }
+  .title-row { display: flex; gap: 14px; align-items: center; margin: 6px 0 14px; } .title-row h1 { margin: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; margin-top: 8px; margin-right: 4px; border: 1px solid transparent; }
+  .ok { background: rgba(52,211,153,.12); color: var(--good); border-color: rgba(52,211,153,.25); }
+  .warn { background: rgba(251,191,36,.12); color: var(--warn); border-color: rgba(251,191,36,.25); }
+  .bad { background: rgba(248,113,113,.12); color: var(--bad); border-color: rgba(248,113,113,.3); }
+  .info { background: rgba(34,211,238,.1); color: var(--accent); border-color: rgba(34,211,238,.25); }
+  .pill.bad::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: blink 1.4s infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+  ol { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; }
+  ol li { counter-increment: s; display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+  ol li::before { content: counter(s); flex: none; width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; font: 600 12px var(--mono); color: #fff; background: linear-gradient(135deg, var(--accent), var(--blue)); }
+  .safety { display: flex; gap: 10px; background: linear-gradient(135deg, rgba(248,113,113,.16), rgba(248,113,113,.06)); border: 1px solid rgba(248,113,113,.4); color: #ffd4d4; border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; box-shadow: 0 0 30px -10px rgba(248,113,113,.5); }
+  .safety svg { width: 20px; height: 20px; flex: none; color: var(--bad); }
+  .rows { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 4px 14px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .row .muted { text-align: right; }
+  .total-box { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; padding: 14px 16px; border-radius: 16px; background: linear-gradient(135deg, rgba(34,211,238,.14), rgba(79,124,255,.14) 60%, rgba(139,92,246,.14)); border: 1px solid rgba(79,124,255,.35); }
+  .total-box span { color: #c8d6f2; font-size: 13px; text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+  .total-box b { font-size: 28px; font-weight: 700; letter-spacing: -.02em; }
+  .notes { color: var(--muted); font-size: 13px; margin: 12px 0 0; padding-left: 18px; }
+  .notes li { margin: 3px 0; }
+  .slots { display: flex; flex-wrap: wrap; gap: 8px; }
+  button.slot { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; font: inherit; font-size: 14px; cursor: pointer; transition: all .2s; }
+  button.slot:hover, button.slot:focus-visible { border-color: var(--accent); background: rgba(34,211,238,.1); box-shadow: 0 0 22px -6px rgba(34,211,238,.6); outline: none; transform: translateY(-1px); }
+  button.slot.primary { border: 0; color: #fff; font-weight: 600; background: linear-gradient(135deg, var(--accent), var(--blue)); box-shadow: 0 8px 22px -6px rgba(34,211,238,.6); }
+  button.slot.primary:hover { filter: brightness(1.1); }
+  .otp { display: flex; gap: 6px; margin: 6px 0 4px; }
+  .otp span { width: 36px; height: 44px; display: grid; place-items: center; border-radius: 10px; font: 700 22px var(--mono); background: rgba(0,0,0,.3); border: 1px solid rgba(34,211,238,.35); color: #fff; box-shadow: inset 0 0 12px rgba(34,211,238,.15); }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .upsell { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; border: 1px dashed rgba(139,92,246,.6); background: rgba(139,92,246,.08); border-radius: 14px; padding: 12px 14px; color: #d6ccff; font-size: 13px; }
+  .upsell svg { width: 18px; height: 18px; flex: none; color: var(--violet); }
+  .muted { color: var(--muted); }
+  .steps { display: flex; align-items: center; margin: 14px 0 4px; }
+  .step { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; color: var(--dim); flex: none; width: 74px; text-align: center; }
+  .step i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--dim); background: var(--bg); }
+  .step.done { color: var(--muted); } .step.done i { border-color: var(--good); background: var(--good); }
+  .step.now { color: var(--text); font-weight: 600; } .step.now i { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 4px rgba(34,211,238,.2), 0 0 14px var(--accent); animation: blink 1.6s infinite; }
+  .bar { flex: 1; height: 2px; margin-bottom: 20px; background: var(--line); border-radius: 2px; min-width: 12px; }
+  .bar.done { background: linear-gradient(90deg, var(--good), var(--accent)); }
+  .stars { color: var(--warn); }
+  .check { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, var(--good), var(--accent)); box-shadow: 0 0 30px -4px rgba(52,211,153,.6); color: #04221a; animation: pop .6s cubic-bezier(.2,1.6,.4,1) both; }
+  .check svg { width: 28px; height: 28px; }
+  @keyframes pop { from { transform: scale(.3); opacity: 0; } }
+  @media (max-width: 420px) { .split { grid-template-columns: 1fr; } .step { width: 56px; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="root" class="card"><div class="muted">Loading…</div></div>
+<script>
+  // Minimal MCP Apps (io.modelcontextprotocol/ui) client: handshake with the
+  // host over postMessage, render tool results, and send taps back as messages.
+  const root = document.getElementById('root');
+  let nextId = 1;
+  const pending = new Map();
+
+  function rpc(method, params) {
+    const id = nextId++;
+    window.parent.postMessage({ jsonrpc: '2.0', id, method, params }, '*');
+    return new Promise(resolve => pending.set(id, resolve));
+  }
+  function notify(method, params) {
+    window.parent.postMessage({ jsonrpc: '2.0', method, params }, '*');
+  }
+  function say(text) {
+    rpc('ui/message', { role: 'user', content: [{ type: 'text', text }] });
+  }
+
+  window.addEventListener('message', e => {
+    const msg = e.data;
+    if (!msg || msg.jsonrpc !== '2.0') return;
+    if (msg.id && pending.has(msg.id)) { pending.get(msg.id)(msg.result); pending.delete(msg.id); return; }
+    if (msg.method === 'ui/notifications/tool-result') render(msg.params?.structuredContent || {});
+  });
+
+  new ResizeObserver(() => notify('ui/notifications/size-changed', { height: document.documentElement.scrollHeight })).observe(document.body);
+
+  rpc('ui/initialize', { appInfo: { name: 'homekeeper-card', version: '1.0.0' }, appCapabilities: {}, protocolVersion: '2026-01-26' })
+    .then(() => notify('ui/notifications/initialized', {}));
+
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const rupees = n => `₹${Number(n).toLocaleString('en-IN')}`;
+  const fmtDate = d => d ? new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+
+  const svg = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const ICONS = {
+    ac: svg('<rect x="2.5" y="5" width="19" height="8" rx="2"/><path d="M6 10h12M8 16.5c0 1-1 1.5-1 2.5M12 16.5c0 1-1 1.5-1 2.5M16 16.5c0 1-1 1.5-1 2.5"/>'),
+    refrigerator: svg('<rect x="5.5" y="2.5" width="13" height="19" rx="2"/><path d="M5.5 10h13M8.5 6v1.5M8.5 13v2.5"/>'),
+    washing_machine: svg('<rect x="3.5" y="2.5" width="17" height="19" rx="2"/><circle cx="12" cy="13" r="4.5"/><path d="M7 6h2M14 6h3"/>'),
+    water_purifier: svg('<path d="M12 2.5S6 9.5 6 14a6 6 0 0 0 12 0c0-4.5-6-11.5-6-11.5z"/><path d="M9.5 15a2.5 2.5 0 0 0 2.5 2.5"/>'),
+    geyser: svg('<rect x="6" y="2.5" width="12" height="16" rx="6"/><path d="M12 18.5v3M10 8.5c0 1.5 2 1.5 2 3s-2 1.5-2 3M14 8.5c0 1.5-2 1.5-2 3"/>'),
+    microwave: svg('<rect x="2.5" y="4.5" width="19" height="15" rx="2"/><rect x="5.5" y="7.5" width="9" height="9" rx="1"/><path d="M18 8v.5M18 11v.5M18 14v2"/>'),
+    home: svg('<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/>'),
+    plan: svg('<path d="M12 2.5 4 6v6c0 5 3.5 8.5 8 9.5 4.5-1 8-4.5 8-9.5V6l-8-3.5z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>'),
+    tool: svg('<path d="M14.5 6.5a4 4 0 0 1 5 5l-9 9a2.1 2.1 0 0 1-3-3l9-9"/><path d="M14.5 6.5 17 4"/>'),
+    check: svg('<path d="m5 12.5 4.5 4.5L19 7.5"/>'),
+    alert: svg('<path d="M12 3 2 20.5h20L12 3z"/><path d="M12 10v4.5M12 17.5v.01"/>'),
+    spark: svg('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
+  };
+  const icon = (type, lg) => `<div class="ico${lg ? ' lg' : ''}">${ICONS[type] || ICONS.tool}</div>`;
+  const total = (label, amount) => `<div class="total-box"><span>${esc(label)}</span><b>${amount ? rupees(amount) : 'Free'}</b></div>`;
+
+  function warrantyPill(w) {
+    if (w.inWarranty) return `<span class="pill ok">Warranty till ${fmtDate(w.warrantyEnds)}</span>`;
+    if (w.extended?.covered) return `<span class="pill info">${esc(w.extended.part)} covered till ${fmtDate(w.extended.ends)}</span>`;
+    return `<span class="pill warn">Out of warranty</span>`;
+  }
+  function maintPill(m) {
+    if (m.state === 'overdue') return `<span class="pill bad">Service overdue</span>`;
+    if (m.state === 'due_soon') return `<span class="pill warn">Service due ${fmtDate(m.dueDate)}</span>`;
+    return `<span class="pill ok">Serviced</span>`;
+  }
+  function tracker(d) {
+    const order = ['scheduled', 'assigned', 'on_the_way', 'done'];
+    const labels = ['Booked', 'Assigned', 'On the way', 'Arrived'];
+    const at = d.status === 'completed' ? 3 : Math.max(0, order.indexOf(d.live?.stage || 'scheduled'));
+    return `<div class="steps">${labels.map((l, i) => `${i ? `<div class="bar${i <= at ? ' done' : ''}"></div>` : ''}<div class="step${i < at ? ' done' : i === at ? ' now' : ''}"><i></i>${l}</div>`).join('')}</div>`;
+  }
+
+  const renderers = {
+    home(d) {
+      return `<div class="eyebrow">HomeKeeper · ${esc(d.household.city)}</div>
+        <div class="title-row">${icon('home', true)}<div><h1>${esc(d.household.name)}'s home</h1><div class="muted">${d.appliances.length} appliances monitored</div></div></div>
+        ${d.activeBookings.length ? `<h2>Upcoming visits</h2><div class="grid">${d.activeBookings.map(b => `<div class="tile"><div class="head">${icon('tool')}<div><b>${esc(b.appliance)}</b><small>${esc(b.slot.label)} · ${esc(b.technician.name)}</small></div></div></div>`).join('')}</div>` : ''}
+        ${d.attention.length ? `<h2>Needs attention</h2><div class="rows">${d.attention.map(a => `<div class="row"><span>${esc(a.name)}</span><span class="muted">${esc(a.reason)}</span></div>`).join('')}</div>` : ''}
+        <h2>Appliances</h2>
+        <div class="grid">${d.appliances.map(a => `<div class="tile"><div class="head">${icon(a.type)}<div><b>${esc(a.location)}</b><small>${esc(a.typeLabel)} · ${esc(a.brand)}</small></div></div>${warrantyPill(a.warranty)}${maintPill(a.maintenance)}${a.carePlan ? '<span class="pill info">Care plan</span>' : ''}</div>`).join('')}</div>`;
+    },
+    troubleshoot(d) {
+      return `<div class="eyebrow">Diagnosis · ${esc(d.appliance.name)}</div>
+        <div class="title-row">${icon(d.appliance.type, true)}<h1>${esc(d.title)}</h1></div>
+        ${d.safety ? `<div class="safety">${ICONS.alert}<span>${esc(d.safety)}</span></div>` : ''}
+        <h2>Try this first</h2>
+        <ol>${d.diySteps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+        ${d.likelyCauses.length ? `<h2>Likely causes</h2><div>${d.likelyCauses.map(c => `<span class="pill info">${esc(c)}</span>`).join('')}</div>` : ''}
+        <h2>Coverage</h2><div>${warrantyPill(d.warranty)}${d.repeatIssue ? `<span class="pill warn">Reported ${d.repeatIssue.count} time(s) before</span>` : ''}</div>
+        <div class="slots" style="margin-top:18px"><button class="slot" data-say="That fixed it, thanks">✓ Fixed it</button><button class="slot primary" data-say="That didn't help. Book a technician">Book a technician</button></div>`;
+    },
+    quote(d) {
+      return `<div class="eyebrow">Service quote · ${esc(d.appliance.name)}</div>
+        <div class="title-row">${icon(d.appliance.type, true)}<h1>${esc(d.issue)}</h1></div>
+        <div class="rows">${d.lines.map(l => `<div class="row"><span>${esc(l.label)}</span><span>${l.amount ? rupees(l.amount) : 'Free'}</span></div>`).join('')}</div>
+        ${total('Upfront', d.total)}
+        <ul class="notes">${d.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+        <h2>Pick a slot</h2>
+        <div class="slots">${d.slots.map(s => `<button class="slot" data-say="Book the ${esc(s.label)} slot">${esc(s.label)}</button>`).join('')}</div>
+        ${d.upsell ? `<div class="upsell">${ICONS.spark}<span>${esc(d.upsell.pitch)}</span></div>` : ''}`;
+    },
+    confirm(d) {
+      return `<div class="eyebrow">Confirm booking</div><h1>${esc(d.slot.label)}</h1>
+        ${total('Upfront', d.total)}
+        <div class="slots" style="margin-top:16px"><button class="slot primary" data-say="Yes, confirm it">Yes, book it</button><button class="slot" data-say="No, show other slots">Other slots</button></div>`;
+    },
+    booking(d) {
+      const cancelled = d.status === 'cancelled';
+      const stage = cancelled ? '<span class="pill bad">Cancelled</span>'
+        : d.live?.stage === 'on_the_way' ? `<span class="pill info">On the way · ${d.live.etaMinutes} min</span>`
+        : '<span class="pill ok">Confirmed</span>';
+      return `<div class="eyebrow">Booking ${esc(d.bookingId)}</div>
+        <div class="title-row">${cancelled ? icon('tool', true) : `<div class="check">${ICONS.check}</div>`}<div><h1>${esc(d.appliance)}</h1>${stage}</div></div>
+        ${cancelled ? '' : tracker(d)}
+        <div class="split" style="margin-top:14px">
+          <div class="tile"><small>Technician</small><b>${esc(d.technician.name)}</b><small><span class="stars">★</span> ${d.technician.rating} · ${d.technician.jobs.toLocaleString('en-IN')} jobs</small></div>
+          <div class="tile"><small>When</small><b>${esc(d.slot.label)}</b><small>${esc(d.issue)}</small></div>
+          <div class="tile"><small>Visit OTP</small><div class="otp">${String(d.otp).split('').map(c => `<span>${esc(c)}</span>`).join('')}</div><small>Share on arrival</small></div>
+          <div class="tile"><small>Payment</small><b>${d.amountDue ? rupees(d.amountDue) : 'Free'}</b><small>${esc(d.payment)}</small></div>
+        </div>
+        ${d.live?.message ? `<p class="muted">${esc(d.live.message)}</p>` : ''}`;
+    },
+    slots(d) {
+      return `<div class="eyebrow">Reschedule</div><h1>Pick a new slot</h1>
+        <div class="slots">${d.slots.map(s => `<button class="slot" data-say="Move it to ${esc(s.label)}">${esc(s.label)}</button>`).join('')}</div>`;
+    },
+    plan_order(d) {
+      const paid = d.status === 'paid';
+      return `<div class="eyebrow">${paid ? 'Plan active' : 'Confirm purchase'}</div>
+        <div class="title-row">${paid ? `<div class="check">${ICONS.check}</div>` : icon('plan', true)}<h1>${esc(d.planName)}</h1></div>
+        <div>${d.includes.map(i => `<span class="pill info">${esc(i)}</span>`).join('')}</div>
+        <h2>Covers</h2><div class="rows">${d.appliances.map(a => `<div class="row"><span>${esc(a)}</span>${!paid ? `<span>${rupees(d.pricePerAppliance)}</span>` : ''}</div>`).join('')}
+        ${d.discountPct ? `<div class="row"><span>Multi-appliance discount</span><span style="color:var(--good)">−${d.discountPct}%</span></div>` : ''}</div>
+        ${total(paid ? 'Paid' : 'Total per year', d.total)}
+        ${paid ? `<p class="muted">Valid till ${fmtDate(d.validUntil)}. ${esc(d.payment)}</p>` : `<div class="slots" style="margin-top:16px"><button class="slot primary" data-say="Yes, buy the plan">Yes, buy it</button><button class="slot" data-say="No, not now">Not now</button></div>`}`;
+    },
+    appliance(d) {
+      const a = d.appliance;
+      return `<div class="eyebrow">Added to your home</div><div class="title-row">${icon(a.type, true)}<h1>${esc(a.name)}</h1></div>${warrantyPill(a.warranty)}${maintPill(a.maintenance)}`;
+    },
+  };
+
+  function render(data) {
+    const fn = renderers[data.kind];
+    try {
+      root.innerHTML = fn ? fn(data) : `<pre>${esc(JSON.stringify(data, null, 2))}</pre>`;
+    } catch (err) {
+      root.innerHTML = `<div class="muted">Couldn't show this card (${esc(err.message)}).</div>`;
+    }
+  }
+
+  root.addEventListener('click', e => {
+    const b = e.target.closest('[data-say]');
+    if (b) say(b.dataset.say);
+  });
+</script>
+</body>
+</html>
